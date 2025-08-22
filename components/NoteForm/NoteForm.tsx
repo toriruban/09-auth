@@ -10,10 +10,10 @@ export default function NoteForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { draft, setDraft, clearDraft } = useNoteDraft();
-
   const [formState, setFormState] = useState<CreateNoteRequest>({
     title: draft.title || "",
     content: draft.content || "",
+    tag: draft.tag || "", 
   });
 
   const mutation = useMutation({
@@ -29,12 +29,10 @@ export default function NoteForm() {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    const updated = { ...formState, [name]: value };
+    const updated: CreateNoteRequest = { ...formState, [name]: value };
     setFormState(updated);
     setDraft(updated);
   };
@@ -44,15 +42,14 @@ export default function NoteForm() {
     mutation.mutate(formState);
   };
 
-  const handleCancel = () => {
-    router.back();
-  };
+  const handleCancel = () => router.back();
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.formGroup}>
         <label htmlFor="title">Title</label>
         <input
+          id="title"
           name="title"
           type="text"
           value={formState.title}
@@ -65,6 +62,7 @@ export default function NoteForm() {
       <div className={styles.formGroup}>
         <label htmlFor="content">Content</label>
         <textarea
+          id="content"
           name="content"
           rows={6}
           value={formState.content}
@@ -73,23 +71,38 @@ export default function NoteForm() {
           required
         />
       </div>
+      
+      <div className={styles.formGroup}>
+        <label htmlFor="tag">Tag</label>
+        <select
+          id="tag"
+          name="tag"
+          value={formState.tag}
+          onChange={handleChange}
+          className={styles.select}
+          required
+        >
+          <option value="" disabled>
+            Select a tag
+          </option>
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Study">Study</option>
+        </select>
+      </div>
 
       {mutation.isError && (
         <p className={styles.error}>Failed to create note. Try again.</p>
       )}
 
       <div className={styles.actions}>
-        <button
-          type="button"
-          onClick={handleCancel}
-          className={styles.cancelButton}
-        >
+        <button type="button" onClick={handleCancel} className={styles.cancelButton}>
           Cancel
         </button>
         <button
           type="submit"
-          className={styles.submitButton}
           disabled={mutation.isPending}
+          className={styles.submitButton}
         >
           {mutation.isPending ? "Creating..." : "Create note"}
         </button>
