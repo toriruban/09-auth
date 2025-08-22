@@ -4,23 +4,21 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "notehub-public.goit.study" },
-      { hostname: "ac.goit.global" },
+      { protocol: "https", hostname: "ac.goit.global" }, 
     ],
   },
 
   async headers() {
     return [
       {
-        source: "/notes/filter/:slug",
-        locale: false,
+        source: "/(.*)",
         headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=300, must-revalidate",
-          },
+          { key: "Cache-Control", value: "no-store" },
+          { key: "Vary", value: "Cookie" },
         ],
       },
     ];
   },
 };
+
 export default nextConfig;
