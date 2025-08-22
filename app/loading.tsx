@@ -1,4 +1,4 @@
-import css from './notes/filter/[...slug]/NotesClient.module.css';
+import css from './(private routes)/notes/filter/[...slug]/NotesClient.module.css';
 
 
 const Loading = () => (

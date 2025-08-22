@@ -6,7 +6,7 @@ import { fetchNoteById } from "@/lib/api/clientApi";
 import css from "./NoteDetails.module.css";
 import type { Note } from "@/types/note";
 
-const NotePreviewClient = () => {
+const NoteDetailsClient = () => {
   const { id } = useParams() as { id?: string };
   const isValidId = typeof id === "string" && id.trim() !== "";
 
@@ -66,4 +66,4 @@ const NotePreviewClient = () => {
   );
 };
 
-export default NotePreviewClient;
+export default NoteDetailsClient;
