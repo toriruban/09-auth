@@ -9,7 +9,7 @@ export async function generateMetadata({ params }: NotesProps): Promise<Metadata
     const tag = isAll ? 'All notes' : slug.join('/');
     const pageTitle = isAll ? 'All notes | NoteHub' : `${tag} | NoteHub`;
     const pageDescription = isAll ? 'View all notes' : `View notes filtered by: ${tag}`;
-    const filterUrl = `https://08-zustand-opal.vercel.app/notes/filter/${slug.join(`/`)}`
+    const filterUrl = `https://09-auth-drab.vercel.app/notes/filter/${slug.join(`/`)}`
     
     return {
         title: pageTitle,

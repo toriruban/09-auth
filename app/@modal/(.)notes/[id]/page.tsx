@@ -3,43 +3,17 @@ import {
     HydrationBoundary,
     QueryClient,
   } from "@tanstack/react-query";
-  import { fetchNoteById } from "@/lib/api/clientApi";
-  import NotePreviewClient from "./NotePreview.client";
-  import { Metadata } from "next";
+  import { fetchNoteById } from "@/lib/api/serverApi";
+  import NotePreviewClient from "@/app/@modal/(.)notes/[id]/NotePreview.client";
   
-  type Props = { params: Promise<{ id: string }> };
-  export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { id } = await params;
-    const note = await fetchNoteById(id);
-    return {
-      title: `Note: ${note.title}`,
-      description: note.content.slice(0, 30),
-      openGraph: {
-        title: `Note: ${note.title}`,
-        description: note.content.slice(0, 100),
-        url: `https://notehub.com/notes/${id}`,
-        siteName: "NoteHub",
-        images: [
-          {
-            url: "https://ac.goit.global/fullstack/react/og-meta.jpg",
-            width: 1200,
-            height: 630,
-            alt: note.title,
-          },
-        ],
-        type: "article",
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: `${note.title}`,
-        description: note.content.slice(0, 3),
-        images: ["https://ac.goit.global/fullstack/react/og-meta.jpg"],
-      },
-    };
-  }
+  type Props = { params: { id: string } };
   
   const NoteDetails = async ({ params }: Props) => {
-    const { id } = await params;
+    const { id } = params;
+    if (!id) {
+      throw new Error("Invalid note ID");
+    }
+  
     const queryClient = new QueryClient();
   
     await queryClient.prefetchQuery({
@@ -49,7 +23,7 @@ import {
   
     return (
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <NotePreviewClient />
+        <NotePreviewClient id={id}/>
       </HydrationBoundary>
     );
   };

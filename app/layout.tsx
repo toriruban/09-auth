@@ -3,6 +3,7 @@ import { Roboto } from 'next/font/google';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import TanStackProvider from '@/components/TanStackProvider/TanStackProvider';
+import AuthProvider from '@/components/AuthProvider/AuthProvider';
 import React from 'react';
 import './global.css';
 
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'NoteHub',
         description: 'NoteHub - creating, searching, and deleting notes',
-        url: 'https://08-zustand-opal.vercel.app',
+        url: 'https://09-auth-drab.vercel.app',
         images: [
             {
                 url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
@@ -36,14 +37,19 @@ export default function RootLayout({
         modal: React.ReactNode;
 }>){
     return (
-        <html lang='en'>
-            <body className={roboto.variable}>
-                <TanStackProvider>
-                    <Header />
-                    <main className='main-content'>{ children }{ modal }</main>
-                    <Footer />
-                </TanStackProvider>
-            </body>
+        <html lang="en">
+          <body className={roboto.variable}>
+            <TanStackProvider>
+              <AuthProvider>
+                <Header />
+                <main>
+                  {children}
+                  {modal}
+                </main>
+                <Footer />
+              </AuthProvider>
+            </TanStackProvider>
+          </body>
         </html>
-    )
-}
+      );
+    }

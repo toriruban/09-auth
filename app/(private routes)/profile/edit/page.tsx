@@ -28,7 +28,10 @@ export default function ProfileEditPage() {
     async function fetchUserData() {
       try {
         const data = await getMe();
-        setUser(data);
+        setUser({
+          ...data,
+          avatar: data.avatar ?? undefined,
+        });
         setUsername(data.username);
       } catch (err: unknown) {
         console.error("Failed to load user data:", err);
@@ -36,6 +39,7 @@ export default function ProfileEditPage() {
         router.push("/profile");
       }
     }
+  
     fetchUserData();
   }, [router]);
 

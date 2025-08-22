@@ -1,69 +1,66 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api/clientApi";
+import Modal from "@/components/Modal/Modal";
 import css from "./NotePreview.module.css";
-import type { Note } from "@/types/note";
 
-const NotePreviewClient = () => {
-  const { id } = useParams() as { id?: string };
-  const isValidId = typeof id === "string" && id.trim() !== "";
+type NotePreviewProps = { id: string };
 
-  const {
-    data: note,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<Note, Error>({
-    queryKey: ["note", id],
-    queryFn: () => fetchNoteById(id!),
-    enabled: isValidId,
-    refetchOnMount: false,
-  });
-
-  if (!isValidId) {
+export default function NotePreviewClient({ id }: NotePreviewProps) {
+  const router = useRouter();
+  if (!id || !id.trim()) {
     return <p className={css.messageError}>Invalid note ID.</p>;
   }
 
-  if (isLoading) {
-    return <p className={css.message}>Loading, please wait...</p>;
-  }
+  const { data: note, isLoading, isError, error } = useQuery({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
+    enabled: !!id,     
+    refetchOnMount: false,
+  });
 
-  if (isError) {
-    return (
-      <p className={css.messageError}>
-        Could not fetch note details. {error?.message}
-      </p>
-    );
-  }
-
-  if (!note) {
-    return <p className={css.message}>Note not found.</p>;
-  }
-
-  const formattedDate = note.createdAt
-    ? new Date(note.createdAt).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "N/A";
+  const handleClose = () => router.back();
 
   return (
-    <div className={css.container}>
-      <div className={css.item}>
-        <div className={css.header}>
-          <h2>{note.title}</h2>
-        </div>
-        <p className={css.content}>{note.content}</p>
-        <p className={css.date}>Created: {formattedDate}</p>
-        {note.tag && <p className={css.tag}>Tag: {note.tag}</p>}
-      </div>
-    </div>
-  );
-};
+    <Modal onClose={handleClose}>
+      <div className={css.container}>
+        {isLoading && <p className={css.message}>Loading, please wait...</p>}
 
-export default NotePreviewClient;
+        {isError && (
+          <p className={css.messageError}>
+            Could not fetch note. {error?.message}
+          </p>
+        )}
+
+        {note && (
+          <div className={css.item}>
+            <div className={css.header}>
+              <h2>{note.title}</h2>
+              {note.tag && <span className={css.tag}>{note.tag}</span>}
+            </div>
+
+            <div className={css.content}>{note.content}</div>
+
+            <div className={css.date}>
+              {note.createdAt
+                ? new Date(note.createdAt).toLocaleString("uk-UA", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "No date"}
+            </div>
+
+            <button onClick={handleClose} className={css.backBtn}>
+              ← Back
+            </button>
+          </div>
+        )}
+      </div>
+    </Modal>
+  );
+}

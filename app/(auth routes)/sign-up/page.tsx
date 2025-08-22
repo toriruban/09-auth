@@ -8,21 +8,19 @@ import css from "./SignUpPage.module.css";
 
 const SignUp = () => {
   const router = useRouter();
-  const setUser = useAuth((state) => state.setUser);
+  const { setAuth } = useAuth();       
   const [error, setError] = useState("");
 
   const handleSubmit = async (formData: FormData) => {
     try {
       const formValues = Object.fromEntries(formData) as RegisterRequest;
-      const res = await register(formValues);
-      if (res) {
-        setUser(res);
-        router.push("/profile");
-      } else {
-        setError("Invalid email or password");
-      }
-    } catch (error) {
-      console.log("error", error);
+      const user = await register(formValues);
+
+      setAuth(user);                  
+      setError("");
+      router.replace("/profile");      
+      router.refresh();             
+    } catch {
       setError("Invalid email or password");
     }
   };
@@ -33,30 +31,16 @@ const SignUp = () => {
       <form className={css.form} action={handleSubmit}>
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            className={css.input}
-            required
-          />
+          <input id="email" type="email" name="email" className={css.input} required />
         </div>
 
         <div className={css.formGroup}>
           <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            name="password"
-            className={css.input}
-            required
-          />
+          <input id="password" type="password" name="password" className={css.input} required />
         </div>
 
         <div className={css.actions}>
-          <button type="submit" className={css.submitButton}>
-            Register
-          </button>
+          <button type="submit" className={css.submitButton}>Register</button>
         </div>
 
         {error && <p className={css.error}>{error}</p>}

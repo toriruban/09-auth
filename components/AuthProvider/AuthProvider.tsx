@@ -1,31 +1,41 @@
 "use client";
-
-import { checkSession, getMe } from "@/lib/api/clientApi";
-import { useAuth } from "@/lib/store/authStore";
 import { useEffect } from "react";
+import { useAuth } from "@/lib/store/authStore";
+import { checkSession, getMe } from "@/lib/api/clientApi";
 
-type Props = {
-  children: React.ReactNode;
-};
+const AUTH_KEY = "notehub:auth";
 
-const AuthProvider = ({ children }: Props) => {
-  const setUser = useAuth((state) => state.setUser);
-  const clearAuth = useAuth((state) => state.clearAuth);
+export default function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { setAuth, clearAuth } = useAuth();
 
   useEffect(() => {
-    const fetchSession = async () => {
-      const isAuth = await checkSession();
-      if (isAuth) {
-        const user = await getMe();
-        setUser(user);
-      } else {
-        clearAuth();
+    let cancelled = false;
+
+    const init = async () => {
+      try {
+        const ok = await checkSession();      
+        if (!ok) {
+          if (!cancelled) clearAuth();
+          return;
+        }
+        const me = await getMe();             
+        if (!cancelled) setAuth(me);
+      } catch {
+        if (!cancelled) clearAuth();
       }
     };
-    fetchSession();
-  }, [clearAuth, setUser]);
 
-  return children;
-};
+    init();
 
-export default AuthProvider;
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === AUTH_KEY && e.newValue === "logout") clearAuth();
+    };
+    window.addEventListener("storage", onStorage);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("storage", onStorage);
+    };
+  }, [setAuth, clearAuth]);
+
+  return <>{children}</>;
+}

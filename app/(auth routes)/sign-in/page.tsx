@@ -8,21 +8,19 @@ import css from "./SignInPage.module.css";
 
 const SignIn = () => {
   const router = useRouter();
-  const setUser = useAuth((state) => state.setUser);
+  const { setAuth } = useAuth();         
   const [error, setError] = useState("");
 
   const handleSubmit = async (formData: FormData) => {
     try {
       const formValues = Object.fromEntries(formData) as LoginRequest;
-      const res = await login(formValues);
-      if (res) {
-        setUser(res);
-        router.push("/profile");
-      } else {
-        setError("Invalid email or password");
-      }
-    } catch (error) {
-      console.log("error", error);
+      const user = await login(formValues);
+
+      setAuth(user);                      
+      setError("");
+      router.replace("/profile");          
+      router.refresh();                   
+    } catch {
       setError("Invalid email or password");
     }
   };

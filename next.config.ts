@@ -4,18 +4,26 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "notehub-public.goit.study" },
-      { protocol: "https", hostname: "ac.goit.global" }, 
+      { protocol: "https", hostname: "ac.goit.global" },
     ],
   },
-
   async headers() {
     return [
       {
-        source: "/(.*)",
-        headers: [
-          { key: "Cache-Control", value: "no-store" },
-          { key: "Vary", value: "Cookie" },
-        ],
+        source: "/sign-in",
+        headers: [{ key: "Cache-Control", value: "no-store" }],
+      },
+      {
+        source: "/sign-up",
+        headers: [{ key: "Cache-Control", value: "no-store" }],
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "https://notehub-api.goit.study/:path*",
       },
     ];
   },

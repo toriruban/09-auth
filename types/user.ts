@@ -5,5 +5,5 @@ export type User = {
     role: string;
     createdAt: string;
     updatedAt: string;
-    avatar?: string;
+    avatar?: string | null;
   };
