@@ -88,8 +88,8 @@ export default function NoteForm() {
           <option value="Work">Work</option>
           <option value="Personal">Personal</option>
           <option value="Study">Todo</option>
-          <option value="Study">Meeting</option>
-          <option value="Study">Shopping</option>
+          <option value="Meeting">Meeting</option>
+          <option value="Shopping">Shopping</option>
         </select>
       </div>
 
