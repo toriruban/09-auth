@@ -8,41 +8,44 @@ import css from "./NotePreview.module.css";
 
 type NotePreviewProps = { id: string };
 
-export default function NotePreviewClient({ id }: NotePreviewProps) {
+export default function NotePreview({ id }: NotePreviewProps) {
   const router = useRouter();
-  if (!id || !id.trim()) {
-    return <p className={css.messageError}>Invalid note ID.</p>;
-  }
 
-  const { data: note, isLoading, isError, error } = useQuery({
+  const {
+    data: note,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
-    enabled: !!id,     
     refetchOnMount: false,
   });
 
-  const handleClose = () => router.back();
+  const handleClose = () => {
+    router.back();
+  };
+
+  if (isLoading) {
+    return <p className={css.messageError}>Invalid note ID.</p>;
+  }
 
   return (
     <Modal onClose={handleClose}>
       <div className={css.container}>
         {isLoading && <p className={css.message}>Loading, please wait...</p>}
-
         {isError && (
           <p className={css.messageError}>
             Could not fetch note. {error?.message}
           </p>
         )}
-
         {note && (
           <div className={css.item}>
             <div className={css.header}>
               <h2>{note.title}</h2>
               {note.tag && <span className={css.tag}>{note.tag}</span>}
             </div>
-
             <div className={css.content}>{note.content}</div>
-
             <div className={css.date}>
               {note.createdAt
                 ? new Date(note.createdAt).toLocaleString("uk-UA", {
@@ -54,7 +57,6 @@ export default function NotePreviewClient({ id }: NotePreviewProps) {
                   })
                 : "No date"}
             </div>
-
             <button onClick={handleClose} className={css.backBtn}>
               ← Back
             </button>
